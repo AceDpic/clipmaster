@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<!-- Déclare que le document est en HTML5 -->
+<html lang="fr">
+<!-- Racine de la page, langue française -->
+<head>
+<!-- Zone d'informations techniques (non visible) -->
+<meta charset="UTF-8">
+<!-- Encodage pour afficher les accents correctement -->
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- Adapte la page aux écrans de téléphone -->
+<title>ClipMaster – La formation de clipping</title>
+<!-- Titre affiché dans l’onglet du navigateur -->
+<style>
+/* Début des styles CSS — style « soft surface » : le fond et les éléments ont presque la même teinte, seul le relief (lumière en haut à gauche, ombre en bas à droite) les distingue */
+*, *::before, *::after { box-sizing: border-box; } /* le padding est toujours inclus dans les tailles */
+:root {
+  /* Variables de couleurs (mode clair) */
+  --bg: #e8ebf3; /* couleur de fond de la page */
+  --hi: #f1f4fb; /* côté éclairé d’une surface bombée (haut gauche) */
+  --lo: #e0e4ee; /* côté dans l’ombre d’une surface bombée (bas droite) */
+  --sh-d: rgba(146, 158, 189, 0.55); /* ombre douce (bas droite) */
+  --sh-l: rgba(255, 255, 255, 0.85); /* lumière douce (haut gauche) */
+  --rim: rgba(255, 255, 255, 0.7); /* liseré clair sur le bord des surfaces */
+  --groove: rgba(146, 158, 189, 0.4); /* trait gravé du pied de page */
+  --overlay: rgba(24, 27, 46, 0.5); /* voile derrière la fenêtre de paiement */
+  --text: #181a26; /* couleur du texte principal */
+  --muted: #565b70; /* couleur du texte secondaire */
+  --accent: #6d28d9; /* couleur d’accent (violet) pour les textes */
+  --accent-text: #ffffff; /* texte sur fond d’accent */
+  --tint: rgba(109, 40, 217, 0.1); /* voile violet très léger */
+  --line-accent: rgba(109, 40, 217, 0.35); /* fine bordure violette */
+  --btn-top: #7c3aed; /* haut du bouton en relief */
+  --btn-bot: #6d28d9; /* bas du bouton en relief */
+  --btn-edge: #4c1d95; /* tranche (épaisseur) du bouton en relief */
+  --btn-glow: rgba(76, 29, 149, 0.45); /* ombre violette sous le bouton */
+  --emboss: 0 1px 0 rgba(255, 255, 255, 0.85), 0 2px 5px rgba(110, 122, 160, 0.22); /* texte légèrement en relief */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1); /* courbe d’animation douce */
+  --o: 6px; /* distance des ombres (s’adapte à l’écran plus bas) */
+  --bl: 14px; /* flou des ombres (s’adapte à l’écran plus bas) */
+  --surface: linear-gradient(145deg, var(--hi), var(--lo)); /* surface très légèrement bombée */
+  --well: linear-gradient(145deg, var(--lo), var(--hi)); /* surface très légèrement creuse */
+  /* Reliefs : toujours 4 couches (ombre, lumière, creux sombre, creux clair) pour que le passage relief ↔ creux s’anime en douceur */
+  --raised-sm: calc(var(--o) * 0.5) calc(var(--o) * 0.5) calc(var(--bl) * 0.55) var(--sh-d), calc(var(--o) * -0.5) calc(var(--o) * -0.5) calc(var(--bl) * 0.55) var(--sh-l), inset 0 0 0 transparent, inset 0 0 0 transparent; /* petit relief */
+  --raised: var(--o) var(--o) var(--bl) var(--sh-d), calc(var(--o) * -1) calc(var(--o) * -1) var(--bl) var(--sh-l), inset 0 0 0 transparent, inset 0 0 0 transparent; /* relief moyen */
+  --raised-lg: calc(var(--o) * 1.6) calc(var(--o) * 1.6) calc(var(--bl) * 1.6) var(--sh-d), calc(var(--o) * -1.6) calc(var(--o) * -1.6) calc(var(--bl) * 1.6) var(--sh-l), inset 0 0 0 transparent, inset 0 0 0 transparent; /* grand relief */
+  --raised-xl: calc(var(--o) * 2.1) calc(var(--o) * 2.1) calc(var(--bl) * 2) var(--sh-d), calc(var(--o) * -2.1) calc(var(--o) * -2.1) calc(var(--bl) * 2) var(--sh-l), inset 0 0 0 transparent, inset 0 0 0 transparent; /* relief au survol */
+  --pressed-sm: 0 0 0 transparent, 0 0 0 transparent, inset calc(var(--o) * 0.5) calc(var(--o) * 0.5) calc(var(--bl) * 0.55) var(--sh-d), inset calc(var(--o) * -0.5) calc(var(--o) * -0.5) calc(var(--bl) * 0.55) var(--sh-l); /* petit creux */
+  --pressed: 0 0 0 transparent, 0 0 0 transparent, inset calc(var(--o) * 0.8) calc(var(--o) * 0.8) calc(var(--bl) * 0.8) var(--sh-d), inset calc(var(--o) * -0.8) calc(var(--o) * -0.8) calc(var(--bl) * 0.8) var(--sh-l); /* creux moyen */
+  /* Bouton en 3D : une tranche pleine sous le bouton, qui s’écrase quand on appuie */
+  --key: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 4px 0 var(--btn-edge), 0 12px 18px -8px var(--btn-glow); /* bouton au repos */
+  --key-up: inset 0 1px 0 rgba(255, 255, 255, 0.34), 0 5px 0 var(--btn-edge), 0 16px 22px -8px var(--btn-glow); /* bouton survolé */
+  --key-down: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 1px 0 var(--btn-edge), 0 3px 6px -3px var(--btn-glow); /* bouton enfoncé */
+  color-scheme: light; /* barres de défilement en clair */
+  padding-top: env(safe-area-inset-top, 0px); /* évite l’encoche du téléphone en haut */
+  padding-bottom: env(safe-area-inset-bottom, 0px); /* évite la barre système en bas */
+}
+@media (prefers-color-scheme: dark) {
+  /* Si le téléphone est en mode sombre */
+  :root:not([data-theme="light"]) {
+    --bg: #1c1d2b; /* fond sombre */
+    --hi: #252738; /* côté éclairé */
+    --lo: #191a26; /* côté dans l’ombre */
+    --sh-d: rgba(0, 0, 0, 0.6); /* ombre */
+    --sh-l: rgba(255, 255, 255, 0.05); /* lumière très discrète */
+    --rim: rgba(255, 255, 255, 0.07); /* liseré */
+    --groove: rgba(0, 0, 0, 0.5); /* trait gravé */
+    --overlay: rgba(6, 7, 14, 0.62); /* voile derrière la fenêtre */
+    --text: #f2f2f7; /* texte clair */
+    --muted: #a3a3b8; /* texte secondaire clair */
+    --accent: #a78bfa; /* violet lumineux pour les textes */
+    --tint: rgba(167, 139, 250, 0.14); /* voile violet léger */
+    --line-accent: rgba(167, 139, 250, 0.4); /* bordure violette */
+    --btn-edge: #3b1a78; /* tranche du bouton */
+    --btn-glow: rgba(0, 0, 0, 0.6); /* ombre sous le bouton */
+    --emboss: 0 2px 6px rgba(0, 0, 0, 0.55); /* texte en relief */
+    color-scheme: dark; /* barres de défilement en sombre */
+  }
+}
+:root[data-theme="dark"] {
+  /* Mode sombre forcé par le viewer */
+  --bg: #1c1d2b; /* fond sombre */
+  --hi: #252738; /* côté éclairé */
+  --lo: #191a26; /* côté dans l’ombre */
+  --sh-d: rgba(0, 0, 0, 0.6); /* ombre */
+  --sh-l: rgba(255, 255, 255, 0.05); /* lumière très discrète */
+  --rim: rgba(255, 255, 255, 0.07); /* liseré */
+  --groove: rgba(0, 0, 0, 0.5); /* trait gravé */
+  --overlay: rgba(6, 7, 14, 0.62); /* voile derrière la fenêtre */
+  --text: #f2f2f7; /* texte clair */
+  --muted: #a3a3b8; /* texte secondaire clair */
+  --accent: #a78bfa; /* violet lumineux pour les textes */
+  --tint: rgba(167, 139, 250, 0.14); /* voile violet léger */
+  --line-accent: rgba(167, 139, 250, 0.4); /* bordure violette */
+  --btn-edge: #3b1a78; /* tranche du bouton */
+  --btn-glow: rgba(0, 0, 0, 0.6); /* ombre sous le bouton */
+  --emboss: 0 2px 6px rgba(0, 0, 0, 0.55); /* texte en relief */
+  color-scheme: dark; /* barres de défilement en sombre */
+}
+html { scroll-padding-top: env(safe-area-inset-top, 0px); scroll-behavior: smooth; -webkit-text-size-adjust: 100%; } /* décalage pour les ancres + défilement doux */
+body {
+  /* Style général de la page */
+  margin: 0; /* supprime la marge par défaut */
+  background: var(--bg); /* applique la couleur de fond */
+  color: var(--text); /* applique la couleur du texte */
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; /* police du système (aucun téléchargement) */
+  line-height: 1.6; /* espace entre les lignes */
+  -webkit-font-smoothing: antialiased; /* texte plus fin sur Mac et iPhone */
+  -moz-osx-font-smoothing: grayscale; /* idem sur Firefox */
+  text-rendering: optimizeLegibility; /* meilleure lisibilité */
+}
+::selection { background: var(--tint); } /* couleur de sélection du texte */
+main { max-width: 720px; margin: 0 auto; padding: 0 22px 64px; } /* colonne centrée */
+section { padding: clamp(36px, 6vw, 60px) 0; } /* espace vertical entre sections, adapté à l’écran */
+.hero { text-align: center; padding-top: clamp(56px, 11vw, 104px); } /* bloc d’accueil centré */
+.tag { color: var(--accent); font-weight: 700; font-size: 0.78rem; letter-spacing: 0.12em; } /* petite étiquette */
+.hero .tag { display: inline-block; padding: 7px 16px; border-radius: 999px; background: var(--surface); border: 1px solid var(--rim); box-shadow: var(--raised-sm); margin-bottom: 6px; } /* étiquette d’accueil : pastille en relief */
+h1 { font-size: clamp(2rem, 1.4rem + 3.2vw, 3rem); line-height: 1.1; letter-spacing: -0.03em; font-weight: 800; margin: 18px 0; text-shadow: var(--emboss); text-wrap: balance; } /* grand titre, taille fluide, léger relief */
+h2 { font-size: clamp(1.3rem, 1.15rem + 0.8vw, 1.6rem); line-height: 1.25; letter-spacing: -0.02em; font-weight: 700; margin: 0 0 24px; text-wrap: balance; } /* titres de sections */
+.sub { color: var(--muted); font-size: clamp(1.02rem, 0.98rem + 0.3vw, 1.15rem); line-height: 1.6; max-width: 34em; margin: 0 auto 36px; text-wrap: pretty; } /* sous-titre */
+.btn {
+  /* Bouton d’appel à l’action : touche 3D violette */
+  display: inline-flex; /* permet de centrer le texte et de fixer une hauteur */
+  align-items: center; /* centre le texte verticalement */
+  justify-content: center; /* centre le texte horizontalement */
+  min-height: 48px; /* zone de toucher confortable sur mobile */
+  background: linear-gradient(180deg, var(--btn-top), var(--btn-bot)); /* violet légèrement bombé */
+  color: var(--accent-text); /* texte blanc */
+  padding: 13px 28px; /* espace intérieur */
+  border-radius: 14px; /* coins arrondis */
+  font-family: inherit; /* même police que le reste de la page */
+  font-weight: 600; /* texte en semi-gras */
+  letter-spacing: -0.005em; /* finesse du texte */
+  line-height: 1.2; /* hauteur de ligne compacte */
+  text-decoration: none; /* retire le soulignement */
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2); /* texte légèrement gravé */
+  border: 0; /* retire la bordure */
+  font-size: 1rem; /* taille du texte */
+  cursor: pointer; /* curseur main au survol */
+  box-shadow: var(--key); /* tranche 3D + ombre douce */
+  transition: transform 0.18s var(--ease), box-shadow 0.18s var(--ease); /* effets fluides */
+  -webkit-tap-highlight-color: transparent; /* retire le flash gris au toucher */
+}
+@media (hover: hover) {
+  /* Effet de survol uniquement avec une souris */
+  .btn:hover { transform: translateY(-1px); box-shadow: var(--key-up); } /* le bouton se soulève légèrement */
+}
+.btn:active { transform: translateY(3px); box-shadow: var(--key-down); } /* le bouton s’enfonce, la tranche s’écrase */
+.btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; } /* anneau visible au clavier */
+.hero .btn { min-height: 52px; padding: 14px 34px; } /* bouton principal un peu plus généreux */
+.grid { display: grid; gap: 20px; } /* grille : éléments les uns sous les autres */
+.card { background: var(--surface); border: 1px solid var(--rim); border-radius: 20px; padding: 20px 22px; box-shadow: var(--raised); transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease); } /* style des cartes : surface en relief */
+.card b { display: block; margin-bottom: 6px; font-size: 1.05rem; font-weight: 600; letter-spacing: -0.01em; } /* titre de carte sur sa propre ligne */
+.card span { display: block; color: var(--muted); font-size: 0.95rem; line-height: 1.6; } /* description de carte */
+@media (hover: hover) {
+  /* Légère perspective 3D au survol (souris uniquement) */
+  .card:hover { transform: perspective(900px) translateY(-3px) rotateX(1.5deg); box-shadow: var(--raised-lg); } /* la carte se soulève et s’incline à peine */
+  .price:hover { transform: perspective(900px) translateY(-3px) rotateX(1.2deg); box-shadow: var(--raised-xl); } /* idem pour les offres */
+}
+.price { text-align: center; background: var(--surface); border: 1px solid var(--rim); border-radius: 24px; padding: 34px 24px; box-shadow: var(--raised-lg); transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease); } /* bloc prix */
+.amount { display: block; width: fit-content; max-width: 100%; margin: 12px auto 26px; padding: 6px 30px 8px; border-radius: 18px; background: var(--well); box-shadow: var(--pressed); font-size: clamp(2.5rem, 2.1rem + 2vw, 3.1rem); font-weight: 800; letter-spacing: -0.035em; line-height: 1.15; font-variant-numeric: tabular-nums; text-shadow: var(--emboss); } /* montant du prix, gravé dans un creux */
+.price .btn { width: 100%; max-width: 320px; padding-left: 14px; padding-right: 14px; } /* bouton d’achat : pleine largeur sur mobile (le texte tient sur une ligne), limité sur grand écran */
+.old { color: var(--muted); text-decoration: line-through; font-size: 1rem; font-weight: 400; } /* ancien prix barré */
+.price + .price { margin-top: 22px; } /* espace entre les deux offres */
+.modal { display: none; position: fixed; inset: 0; background: var(--overlay); align-items: center; justify-content: center; padding: max(20px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left)); z-index: 20; overscroll-behavior: contain; } /* fond sombre plein écran, caché par défaut */
+.modal.ouvert { display: flex; animation: fondu 0.2s ease-out; } /* quand la classe « ouvert » est ajoutée, la fenêtre s’affiche en fondu */
+.box { background: var(--surface); border: 1px solid var(--rim); border-radius: 24px; padding: 28px 22px 22px; max-width: 440px; width: 100%; max-height: 90%; overflow-y: auto; overscroll-behavior: contain; box-shadow: 0 28px 60px -20px rgba(10, 12, 30, 0.6), 0 2px 8px rgba(10, 12, 30, 0.18); } /* la fenêtre de paiement : panneau en relief, ombre sombre uniquement */
+.modal.ouvert .box { animation: surgir 0.38s var(--ease); } /* la fenêtre se redresse en douceur (légère 3D) */
+.box h2 { margin-bottom: 4px; } /* réduit l’espace sous le titre de la fenêtre */
+.box .tag { margin-bottom: 8px; } /* petit espace sous l’offre choisie */
+.method { background: var(--surface); border: 1px solid var(--rim); border-radius: 16px; padding: 14px 16px; margin-top: 14px; box-shadow: var(--raised-sm); transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease); } /* une carte par moyen de paiement : petite touche en relief */
+.method b { display: block; font-weight: 600; } /* nom du moyen de paiement sur sa propre ligne */
+.method span { color: var(--muted); font-size: 0.9rem; } /* détails du moyen de paiement */
+.method .num { color: var(--accent); font-size: 1.5rem; font-weight: 800; letter-spacing: 0.02em; font-variant-numeric: tabular-nums; text-shadow: var(--emboss); display: block; margin-top: 2px; } /* le numéro Wave en grand */
+.clic { cursor: pointer; -webkit-tap-highlight-color: transparent; } /* curseur main sur ce qui est cliquable */
+@media (hover: hover) {
+  .clic:hover { box-shadow: var(--raised); } /* le relief grandit au survol */
+}
+.clic:active, .method:has(+ .alerte.visible) { box-shadow: var(--pressed-sm); } /* la touche s’enfonce au clic, et reste enfoncée tant que son message est affiché */
+.clic:active { transform: scale(0.99); } /* petit enfoncement au clic */
+.alerte .btn { display: flex; margin-top: 14px; text-align: center; } /* bouton WhatsApp pleine largeur dans le message */
+.alerte { display: none; margin-top: 14px; padding: 14px 16px; border-radius: 16px; border: 1px solid var(--line-accent); background: var(--well); box-shadow: var(--pressed-sm); font-size: 0.92rem; line-height: 1.55; } /* message d’alerte : zone en creux, caché par défaut */
+.alerte.visible { display: block; animation: monter 0.3s var(--ease); } /* affiche le message quand la classe « visible » est ajoutée */
+.btn.close { margin-top: 20px; width: 100%; background: var(--surface); color: var(--text); text-shadow: none; border: 1px solid var(--rim); box-shadow: var(--raised-sm); } /* bouton Fermer : touche douce, discrète */
+@media (hover: hover) {
+  .btn.close:hover { transform: none; box-shadow: var(--raised); } /* survol du bouton Fermer */
+}
+.btn.close:active { transform: scale(0.99); box-shadow: var(--pressed-sm); } /* le bouton Fermer s’enfonce */
+.note { text-align: center; color: var(--muted); font-size: 0.85rem; margin-top: 20px; } /* petite note */
+footer { max-width: 720px; margin: 0 auto; border-top: 1px solid var(--groove); box-shadow: inset 0 1px 0 var(--sh-l); text-align: center; color: var(--muted); font-size: 0.8rem; padding: 26px 22px; } /* pied de page : trait gravé */
+
+/* Animations discrètes (seulement opacité et position/perspective : très légères pour le téléphone) */
+@keyframes monter { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } } /* apparition vers le haut */
+@keyframes monter3d { from { opacity: 0; transform: perspective(900px) translateY(28px) rotateX(9deg); } to { opacity: 1; transform: none; } } /* apparition avec une légère bascule 3D */
+@keyframes fondu { from { opacity: 0; } to { opacity: 1; } } /* apparition simple */
+@keyframes surgir { from { opacity: 0; transform: perspective(900px) translateY(18px) rotateX(10deg) scale(0.97); } to { opacity: 1; transform: none; } } /* apparition de la fenêtre */
+.hero > * { animation: monter 0.7s var(--ease) backwards; } /* l’accueil apparaît élément par élément */
+.hero > :nth-child(2) { animation-delay: 0.08s; } /* titre */
+.hero > :nth-child(3) { animation-delay: 0.16s; } /* sous-titre */
+.hero > :nth-child(4) { animation-delay: 0.24s; } /* bouton */
+@supports (animation-timeline: view()) {
+  /* Cartes et offres apparaissent quand on arrive dessus en défilant (navigateurs compatibles) */
+  .card, .price { animation: monter3d linear backwards; animation-timeline: view(); animation-range: entry 0% entry 40%; }
+  section > h2, .note { animation: monter linear backwards; animation-timeline: view(); animation-range: entry 0% entry 35%; }
+}
+
+/* Adaptation aux écrans */
+@media (max-width: 380px) {
+  /* Très petits téléphones : ombres plus courtes pour ne pas déborder */
+  :root { --o: 4px; --bl: 10px; } /* ombres réduites */
+  main { padding-left: 16px; padding-right: 16px; } /* marges un peu réduites */
+  .price { padding: 28px 14px; } /* offres plus compactes */
+  .price .btn { font-size: 0.95rem; padding-left: 10px; padding-right: 10px; } /* le texte du bouton tient toujours sur une ligne */
+  .amount { padding-left: 22px; padding-right: 22px; } /* creux du prix plus compact */
+  .box { padding: 24px 18px 18px; } /* fenêtre plus compacte */
+}
+@media (min-width: 768px) {
+  /* Tablettes et ordinateurs */
+  :root { --o: 7px; --bl: 16px; } /* ombres un peu plus amples */
+  main { padding: 0 32px 72px; } /* marges plus généreuses */
+  footer { padding-left: 32px; padding-right: 32px; } /* alignement avec la colonne */
+  .card { padding: 22px 26px; } /* cartes plus respirantes */
+  .price { padding: 38px 32px; } /* offres plus respirantes */
+  .box { padding: 32px 28px 26px; } /* fenêtre plus respirante */
+}
+@media (prefers-contrast: more) {
+  /* Pour qui demande plus de contraste : les contours deviennent bien visibles */
+  .card, .price, .box, .method, .alerte, .btn.close, .hero .tag { border-color: var(--muted); }
+}
+@media (prefers-reduced-motion: reduce) {
+  /* Respect des personnes qui préfèrent moins d’animations */
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+/* Fin des styles CSS */
+</style>
+</head>
+<body>
+<!-- Début du contenu visible -->
+<main>
+<!-- Conteneur principal -->
+
+<section class="hero">
+<!-- Section d’accueil -->
+<div class="tag">FORMATION CLIPPING</div>
+<!-- Petite étiquette au-dessus du titre -->
+<h1>Gagne de l’argent en clippant des vidéos</h1>
+<!-- Titre principal -->
+<p class="sub">Apprends à transformer de longues vidéos en clips viraux et à te faire payer à la vue, même en partant de zéro.</p>
+<!-- Sous-titre qui explique la promesse -->
+<a class="btn" href="#offre">Je rejoins la formation</a>
+<!-- Bouton qui descend vers la section prix -->
+</section>
+
+<section>
+<!-- Section des bénéfices -->
+<h2>Ce que tu vas apprendre</h2>
+<!-- Titre de la section -->
+<div class="grid">
+<!-- Grille de cartes -->
+<div class="card"><b>🎬 Le montage de clips</b><span>Les bases pour couper, sous-titrer et rythmer un clip qui retient l’attention.</span></div>
+<!-- Carte 1 : montage -->
+<div class="card"><b>🔥 Choisir les bons moments</b><span>Repérer les passages qui ont le plus de chances de devenir viraux.</span></div>
+<!-- Carte 2 : choix des moments -->
+<div class="card"><b>💰 Trouver des campagnes payées</b><span>Où trouver des créateurs qui paient au nombre de vues et comment candidater.</span></div>
+<!-- Carte 3 : monétisation -->
+</div>
+</section>
+
+<section id="offre">
+<!-- Section de l’offre (cible du bouton) -->
+<div class="price">
+<!-- Offre 1 : la formation seule -->
+<div class="tag">LA FORMATION</div>
+<!-- Étiquette de l’offre 1 -->
+<div class="amount">8 €</div>
+<!-- Prix de l’offre 1 -->
+<button class="btn buy" data-offre="La formation – 8 €">Acheter la formation</button>
+<!-- Bouton d’achat de l’offre 1 (géré par le script plus bas) -->
+</div>
+<div class="price">
+<!-- Offre 2 : la formation avec accompagnement -->
+<div class="tag">AVEC ACCOMPAGNEMENT</div>
+<!-- Étiquette de l’offre 2 -->
+<div class="amount">10 €</div>
+<!-- Prix de l’offre 2 -->
+<button class="btn buy" data-offre="Avec accompagnement – 10 €">Acheter avec accompagnement</button>
+<!-- Bouton d’achat de l’offre 2 (géré par le script plus bas) -->
+</div>
+<p class="note">Paiement sécurisé · Accès immédiat</p>
+<!-- Note de réassurance -->
+</section>
+
+</main>
+<div class="modal" id="paiement">
+<!-- Fenêtre de paiement (cachée tant qu’on ne clique pas sur une formation) -->
+<div class="box">
+<!-- Boîte blanche au centre de la fenêtre -->
+<h2>Choisis ton paiement</h2>
+<!-- Titre de la fenêtre -->
+<div class="tag" id="offre-titre"></div>
+<!-- Ici le script écrit l’offre choisie et son prix -->
+<div class="method clic" id="wave">
+<!-- Moyen de paiement 1 : Wave (cliquable) -->
+<b>Wave</b>
+<!-- Nom du moyen de paiement -->
+<span class="num">68434487</span>
+<!-- Numéro Wave à utiliser -->
+</div>
+<div class="alerte" id="msg-wave">
+<!-- Message affiché seulement après un clic sur Wave -->
+Une fois la transaction effectuée, envoie les captures d’écran du paiement sur ce numéro WhatsApp.
+<!-- Consigne pour le client -->
+<a class="btn" href="https://wa.me/message/TC2ARKPQD33LG1?src=qr" target="_blank" rel="noopener">Ouvrir WhatsApp</a>
+<!-- Lien qui ouvre la discussion WhatsApp dans un nouvel onglet -->
+</div>
+<div class="method clic" id="carte">
+<!-- Moyen de paiement 2 : carte bancaire (cliquable) -->
+<b>Carte bancaire</b>
+<!-- Nom du moyen de paiement -->
+<span>Touche pour voir la disponibilité</span>
+<!-- Petite indication sous le nom -->
+</div>
+<div class="alerte" id="msg-carte">Suite à des problèmes, le paiement par carte bancaire est bloqué pour l’instant. Merci d’utiliser Wave.</div>
+<!-- Message affiché seulement quand on clique sur la carte bancaire -->
+<button class="btn close" id="fermer">Fermer</button>
+<!-- Bouton pour fermer la fenêtre -->
+</div>
+</div>
+<footer>© 2026 ClipMaster · Aperçu de démonstration</footer>
+<!-- Pied de page -->
+
+<script>
+// Début du script JavaScript
+var fenetre = document.getElementById("paiement"); // récupère la fenêtre de paiement
+var titreOffre = document.getElementById("offre-titre"); // récupère la zone où écrire l’offre choisie
+document.querySelectorAll(".buy").forEach(function (bouton) { // pour chaque bouton d’achat de la page
+  bouton.addEventListener("click", function () { // quand on clique dessus, on exécute cette fonction
+    titreOffre.textContent = bouton.dataset.offre; // écrit le nom et le prix de l’offre cliquée
+    document.getElementById("msg-carte").classList.remove("visible"); // cache le message carte à chaque nouvelle ouverture
+    document.getElementById("msg-wave").classList.remove("visible"); // cache le message Wave à chaque nouvelle ouverture
+    fenetre.classList.add("ouvert"); // affiche la fenêtre de paiement
+  }); // fin de la fonction de clic
+}); // fin de la boucle sur les boutons
+document.getElementById("fermer").addEventListener("click", function () { // clic sur le bouton Fermer
+  fenetre.classList.remove("ouvert"); // cache la fenêtre de paiement
+}); // fin de la fonction Fermer
+fenetre.addEventListener("click", function (e) { // clic n’importe où dans la fenêtre
+  if (e.target === fenetre) { fenetre.classList.remove("ouvert"); } // si on clique sur le fond sombre, on ferme
+}); // fin de la fonction de clic sur le fond
+document.getElementById("carte").addEventListener("click", function () { // clic sur la carte bancaire
+  document.getElementById("msg-carte").classList.add("visible"); // affiche le message de paiement bloqué
+}); // fin de la fonction de clic sur la carte
+document.getElementById("wave").addEventListener("click", function () { // clic sur Wave
+  document.getElementById("msg-wave").classList.add("visible"); // affiche la consigne et le lien WhatsApp
+}); // fin de la fonction de clic sur Wave
+// Fin du script
+</script>
+</body>
+<!-- Fin du contenu visible -->
+</html>
+<!-- Fin du document -->
